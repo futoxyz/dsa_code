@@ -9,79 +9,74 @@ typedef struct tree_node {
     struct tree_node *right;
 } tree_node;
 
-int print_tree(const tree_node *root, int level) {
-    if (root == NULL) {
-        return 1;
-    }
-    print_tree(root->right, level + 4);
-
-    for (int i = 0; i < level; i++) {
-        fputs(" ", stdout);
-    }
-    fputs("[", stdout);
-    fputs(root->data, stdout);
-    fputs("]\n", stdout);
-
-    print_tree(root->left, level + 4);
-    return 0;
-}
-
-
 typedef struct stack_node {
     char *data;
     struct stack_node *next;
 } stack_node;
 
-int is_empty(stack_node **top) {
-    return *top == NULL;
-}
+typedef struct stack {
+    stack_node *top;
+} stack;
 
-int push(stack_node **top, char *value) {
+
+typedef struct stack_tree_node {
+    tree_node *node;
+    struct stack_tree_node *next;
+} stack_tree_node;
+
+typedef struct tree_stack {
+    stack_tree_node *top;
+} tree_stack;
+
+
+void init_stack(stack *s) { s->top = NULL; }
+
+
+int is_empty(stack *s) { return s->top == NULL; }
+
+
+int push(stack *s, char *value) {
     stack_node *new_node = malloc(sizeof(stack_node));
-    if (new_node == NULL) return -1;
+    if (!new_node) return -1;
     new_node->data = value;
-    new_node->next = *top;
-    *top = new_node;
+    new_node->next = s->top;
+    s->top = new_node;
     return 0;
 }
 
-char *pop(stack_node **top) {
-    if (is_empty(top)) return NULL;
-    stack_node *temp = *top;
-    *top = (*top)->next;
+char *pop(stack *s) {
+    if (is_empty(s)) return NULL;
+    stack_node *temp = s->top;
+    s->top = s->top->next;
     char *result = temp->data;
     free(temp);
     return result;
 }
 
-char *peek(stack_node **top) {
-    if (is_empty(top)) return NULL;
-    return (*top)->data;
+char *peek(stack *s) {
+    return is_empty(s) ? NULL : s->top->data;
 }
 
 
-typedef struct stack_tree {
-    tree_node *node;
-    struct stack_tree *next;
-} stack_tree;
+void init_tree_stack(tree_stack *s) { s->top = NULL; }
 
-int is_empty_stack(stack_tree **top) {
-    return *top == NULL;
-}
 
-int push_node(stack_tree **top, tree_node *tree_node) {
-    stack_tree *new_stack_node_node = malloc(sizeof(stack_tree));
-    if (new_stack_node_node == NULL) return -1;
-    new_stack_node_node->node = tree_node;
-    new_stack_node_node->next = *top;
-    *top = new_stack_node_node;
+int is_empty_tree(tree_stack *s) { return s->top == NULL; }
+
+
+int push_node(tree_stack *s, tree_node *t_node) {
+    stack_tree_node *new_node = malloc(sizeof(stack_tree_node));
+    if (!new_node) return -1;
+    new_node->node = t_node;
+    new_node->next = s->top;
+    s->top = new_node;
     return 0;
 }
 
-tree_node *pop_node(stack_tree **top) {
-    if (is_empty_stack(top)) return NULL;
-    stack_tree *temp = *top;
-    *top = (*top)->next;
+tree_node *pop_node(tree_stack *s) {
+    if (is_empty_tree(s)) return NULL;
+    stack_tree_node *temp = s->top;
+    s->top = s->top->next;
     tree_node *res = temp->node;
     free(temp);
     return res;
@@ -95,26 +90,19 @@ tree_node *create_tree_node(const char *val) {
     return node;
 }
 
-
 char *get_string(const char *src, size_t *start, size_t size) {
-    while (*start < size && isspace((unsigned char) src[*start])) {
-        (*start)++;
-    }
+    while (*start < size && isspace((unsigned char)src[*start])) (*start)++;
     if (*start >= size) return NULL;
+    
     int capacity = 8;
-    char *result = (char *) malloc(capacity * sizeof(char));
-    if (result == NULL) return NULL;
+    char *result = malloc(capacity);
     size_t res_size = 0;
+
     if (isdigit(src[*start])) {
-        while (*start < size && isdigit((unsigned char) src[*start])) {
+        while (*start < size && isdigit((unsigned char)src[*start])) {
             if (res_size + 2 > capacity) {
                 capacity *= 2;
-                char *buf = (char *) realloc(result, capacity * sizeof(char));
-                if (buf == NULL) {
-                    free(result);
-                    return NULL;
-                }
-                result = buf;
+                result = realloc(result, capacity);
             }
             result[res_size++] = src[(*start)++];
         }
@@ -125,16 +113,9 @@ char *get_string(const char *src, size_t *start, size_t size) {
     return result;
 }
 
-
 int digit_check(const char *src) {
-    if (src == NULL || *src == '\0') return 0;
-    size_t len = strlen(src);
-    for (size_t i = 0; i < len; i++) {
-        unsigned char cur = src[i];
-        if (!isdigit(cur)) {
-            return 0;
-        }
-    }
+    if (!src || !*src) return 0;
+    for (int i = 0; src[i]; i++) if (!isdigit(src[i])) return 0;
     return 1;
 }
 
@@ -147,77 +128,64 @@ int get_priority(const char *op) {
 }
 
 int poliz(char **dst, const char *src, size_t n) {
-    if (src == NULL || n == 0) return -1;
-    stack_node *stack_node = NULL;
-    size_t dst_size = 0;
-    size_t i = 0;
-
+    stack s;
+    init_stack(&s);
+    size_t dst_size = 0, i = 0;
     char *cur;
+
     while ((cur = get_string(src, &i, n)) != NULL) {
         if (digit_check(cur)) {
             dst[dst_size++] = cur;
         } else if (strcmp(cur, "(") == 0) {
-            push(&stack_node, cur);
+            push(&s, cur);
         } else if (strcmp(cur, ")") == 0) {
-            while (!is_empty(&stack_node) && strcmp(peek(&stack_node), "(") != 0) {
-                dst[dst_size++] = pop(&stack_node);
+            while (!is_empty(&s) && strcmp(peek(&s), "(") != 0) {
+                dst[dst_size++] = pop(&s);
             }
-            if (!is_empty(&stack_node)) {
-                char *open_bracket = pop(&stack_node);
-                free(open_bracket);
-            }
+            free(pop(&s));
             free(cur);
         } else {
-            int p_cur = get_priority(cur);
-            while (!is_empty(&stack_node) && get_priority(peek(&stack_node)) >= p_cur) {
-                dst[dst_size++] = pop(&stack_node);
+            while (!is_empty(&s) && get_priority(peek(&s)) >= get_priority(cur)) {
+                dst[dst_size++] = pop(&s);
             }
-            push(&stack_node, cur);
+            push(&s, cur);
         }
     }
-
-    while (!is_empty(&stack_node)) {
-        char *current = pop(&stack_node);
-        if (strcmp(current, "(") == 0) {
-            free(current);
-        } else {
-            dst[dst_size++] = current;
-        }
-    }
-
-    return (int) dst_size;
+    while (!is_empty(&s)) dst[dst_size++] = pop(&s);
+    return (int)dst_size;
 }
 
-int deinit_root(tree_node *root) {
-    if (root == NULL) return 1;
+int build_tree(tree_node **root, char **src, size_t size) {
+    tree_stack s;
+    init_tree_stack(&s);
+    for (int i = 0; i < size; i++) {
+        tree_node *new_node = create_tree_node(src[i]);
+        if (!digit_check(src[i])) {
+            new_node->right = pop_node(&s);
+            new_node->left = pop_node(&s);
+        }
+        push_node(&s, new_node);
+    }
+    *root = pop_node(&s);
+    return 1;
+}
+
+
+void print_tree(const tree_node *root, int level) {
+    if (!root) return;
+    print_tree(root->right, level + 4);
+    for (int i = 0; i < level; i++) printf(" ");
+    printf("%s\n", root->data);
+    print_tree(root->left, level + 4);
+}
+
+void deinit_root(tree_node *root) {
+    if (!root) return;
     deinit_root(root->left);
     deinit_root(root->right);
     free(root->data);
     free(root);
-    return 0;
 }
-
-
-int build_tree(tree_node **root, char **src, size_t size) {
-    if (src == NULL) return -1;
-    stack_tree *stack_node = NULL;
-    for (int i = 0; i < size; i++) {
-        tree_node *new_node = create_tree_node(src[i]);
-        if (new_node == NULL) return -1;
-        if (!digit_check(src[i])) {
-            new_node->right = pop_node(&stack_node);
-            new_node->left = pop_node(&stack_node);
-            if (new_node->right == NULL || new_node->left == NULL) {
-                deinit_root(new_node);
-                return -1;
-            }
-        }
-        push_node(&stack_node, new_node);
-    }
-    *root = pop_node(&stack_node);
-    return 1;
-}
-
 
 int deinit_expr(char **expr, int size) {
     if (expr == NULL) return 1;
@@ -228,7 +196,6 @@ int deinit_expr(char **expr, int size) {
     free(expr);
     return 0;
 }
-
 
 int simplification(tree_node *root) {
     if (root == NULL) return 1;
@@ -264,7 +231,6 @@ int simplification(tree_node *root) {
 }
 
 
-
 int main() {
     tree_node *root = NULL;
     char *buf = (char *) malloc(1024);
@@ -274,6 +240,7 @@ int main() {
     if (fgets(buf, 1024, stdin) == NULL || buf[0] == '\n' || buf[0] == '\0') {
         return 0;
     }
+    fputs("\n", stdout);
     buf[strcspn(buf, "\n")] = 0;
     char **expr = (char **) malloc(1024 * sizeof(char *));
     if (expr == NULL) {

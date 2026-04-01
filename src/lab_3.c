@@ -29,6 +29,18 @@ typedef struct tree_stack {
 } tree_stack;
 
 
+int print_tree(const tree_node *root, int level) {
+    if (!root) return 1;
+    print_tree(root->right, level + 4);
+    for (int i = 0; i < level; i++) {
+        fputs(" ", stdout);
+    }
+    fputs(root->data, stdout);
+    fputs("\n", stdout);
+    print_tree(root->left, level + 4);
+    return 0;
+}
+
 void init_stack(stack *s) { s->top = NULL; }
 
 
@@ -58,10 +70,14 @@ char *peek(stack *s) {
 }
 
 
-void init_tree_stack(tree_stack *s) { s->top = NULL; }
+void init_tree_stack(tree_stack *s) { 
+    s->top = NULL; 
+}
 
 
-int is_empty_tree(tree_stack *s) { return s->top == NULL; }
+int is_empty_tree(tree_stack *s) { 
+    return s->top == NULL; 
+}
 
 
 int push_node(tree_stack *s, tree_node *t_node) {
@@ -171,30 +187,12 @@ int build_tree(tree_node **root, char **src, size_t size) {
 }
 
 
-void print_tree(const tree_node *root, int level) {
-    if (!root) return;
-    print_tree(root->right, level + 4);
-    for (int i = 0; i < level; i++) printf(" ");
-    printf("%s\n", root->data);
-    print_tree(root->left, level + 4);
-}
-
 void deinit_root(tree_node *root) {
     if (!root) return;
     deinit_root(root->left);
     deinit_root(root->right);
     free(root->data);
     free(root);
-}
-
-int deinit_expr(char **expr, int size) {
-    if (expr == NULL) return 1;
-    if (size <= 0) return -1;
-    for (int i = 0; i < size; i++) {
-        free(expr[i]);
-    }
-    free(expr);
-    return 0;
 }
 
 int simplification(tree_node *root) {
@@ -257,7 +255,10 @@ int main() {
     print_tree(root, 0);
 
     deinit_root(root);
-    deinit_expr(expr, dst_size);
+    for (int i = 0; i < dst_size; i++) {
+        free(expr[i]);
+    }
+    free(expr);
     free(buf);
     return 0;
 }

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#define TAB 4
 
 typedef struct tree_node {
     char *data;
@@ -31,13 +32,13 @@ typedef struct tree_stack {
 
 int print_tree(const tree_node *root, int level) {
     if (root == NULL) return 1;
-    print_tree(root->right, level + 4);
+    print_tree(root->right, level + TAB);
     for (int i = 0; i < level; i++) {
         fputs(" ", stdout);
     }
     fputs(root->data, stdout);
     fputs("\n", stdout);
-    print_tree(root->left, level + 4);
+    print_tree(root->left, level + TAB);
     return 0;
 }
 

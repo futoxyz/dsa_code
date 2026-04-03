@@ -30,7 +30,7 @@ typedef struct tree_stack {
 
 
 int print_tree(const tree_node *root, int level) {
-    if (!root) return 1;
+    if (root == NULL) return 1;
     print_tree(root->right, level + 4);
     for (int i = 0; i < level; i++) {
         fputs(" ", stdout);
@@ -188,7 +188,7 @@ int build_tree(tree_node **root, char **src, size_t size) {
 
 
 void deinit_root(tree_node *root) {
-    if (!root) return;
+    if (root == NULL) return;
     deinit_root(root->left);
     deinit_root(root->right);
     free(root->data);

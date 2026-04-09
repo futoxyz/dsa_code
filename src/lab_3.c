@@ -83,7 +83,7 @@ int is_empty_tree(tree_stack *s) {
 
 int push_node(tree_stack *s, tree_node *t_node) {
     stack_tree_node *new_node = malloc(sizeof(stack_tree_node));
-    if (!new_node) return -1;
+    if (new_node == NULL) return -1;
     new_node->node = t_node;
     new_node->next = s->top;
     s->top = new_node;
@@ -101,7 +101,7 @@ tree_node *pop_node(tree_stack *s) {
 
 tree_node *create_tree_node(const char *val) {
     tree_node *node = malloc(sizeof(tree_node));
-    if (!node) return NULL;
+    if (node == NULL) return NULL;
     node->data = strdup(val);
     node->left = node->right = NULL;
     return node;
@@ -144,7 +144,7 @@ int get_priority(const char *op) {
     return -1;
 }
 
-int poliz(char **dst, const char *src, size_t n) {
+int rpn(char **dst, const char *src, size_t n) {
     stack s;
     init_stack(&s);
     size_t dst_size = 0, i = 0;
@@ -196,38 +196,34 @@ void deinit_root(tree_node *root) {
     free(root);
 }
 
-int simplification(tree_node *root) {
-    if (root == NULL) return 1;
+int simplification(tree_node **root) {
+    if (root == NULL || *root == NULL) return 1;
+    tree_node *cur = *root;
 
-    if (strcmp(root->data, "/") == 0 && root->left && root->right) {
-        tree_node *L = root->left;
-        tree_node *R = root->right;
-
-        if (strcmp(L->data, "*") == 0 && strcmp(R->data, "2") == 0) {
+    simplification(&(cur->left));
+    simplification(&(cur->right));
+    
+    if (strcmp(cur->data, "/") == 0 && cur->left && cur->right) {
+        tree_node *L = cur->left;
+        tree_node *R = cur->right;
+        if (strcmp(R->data, "2") == 0 && strcmp(L->data, "*") == 0) {
             tree_node *LL = L->left;
             tree_node *LR = L->right;
-
             if (LL && strcmp(LL->data, "4") == 0) {
                 free(LL->data);
                 LL->data = strdup("2");
-
-                free(root->data);
-                root->data = strdup("*");
-
-                root->left = LL;
-                root->right = LR;
-
-                free(L->data);
-                free(L);
+                *root = L; 
+                free(cur->data);
+                free(cur);
                 free(R->data);
                 free(R);
-
                 return 0;
             }
         }
     }
     return -1;
 }
+
 
 
 int main() {
@@ -246,13 +242,13 @@ int main() {
         free(buf);
         return -1;
     }
-    int dst_size = poliz(expr, buf, strlen(buf));
+    int dst_size = rpn(expr, buf, strlen(buf));
     if (dst_size <= 0) {
         free(buf);
         return -1;
     }
     build_tree(&root, expr, dst_size);
-    simplification(root);
+    simplification(&root);
     print_tree(root, 0);
 
     deinit_root(root);

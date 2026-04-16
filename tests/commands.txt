@@ -1,0 +1,14 @@
+1 mouse -11.3231
+1 cat 5.5332
+1 dog 7.1110
+1 bird 2.6670
+4
+3 cat
+2 cat
+3 cat
+1 horse 15.8700
+1 ocelot 20.0000
+4
+2 mouse
+2 dog
+4

@@ -3,7 +3,7 @@ Checklist:
 - BST ✅
 - Sorting ✅
 - Operation tree ✅
-- B-tree ❌
+- B-tree ✅
 - ? ❌
 - ? ❌
 - ? ❌

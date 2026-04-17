@@ -1,14 +1,29 @@
-1 mouse -11.3231
-1 cat 5.5332
-1 dog 7.1110
-1 bird 2.6670
-4
-3 cat
-2 cat
-3 cat
-1 horse 15.8700
-1 ocelot 20.0000
-4
-2 mouse
-2 dog
-4
+1 wolf 8.88
+1 cat 5.51
+1 ant 1.101
+1 lion 6.62
+1 bear -3.3
+3
+1 frog 2.2
+1 shark 4.4
+1 snake 7.7
+1 deer 9.9
+1 ocelot 1.2
+3
+4 lion
+4 dragon
+1 bird 0.1
+1 fish 2.3
+1 goat 4.5
+1 hawk 6.7
+1 mole 8.9
+3
+2 lion
+2 bear
+3
+4 bear
+1 owl 1.5
+1 pig 2.5
+2 wolf
+2 ant
+3

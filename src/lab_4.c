@@ -343,16 +343,19 @@ double search(const Node *root, const char *key) {
 
 void print(Node *root, int level) {
     if (root == NULL) return;
-    if (!root->is_leaf) print(root->children[root->keys_cnt], level + 1);
-
-    for (int i = root->keys_cnt - 1; i >= 0; --i) {
-        for (int j = 0; j < level; ++j) {
-            fputs("    ", stdout);
+    for (int i = root->keys_cnt; i >= 0; --i) {
+        if (!root->is_leaf && root->children[i] != NULL) {
+            print(root->children[i], level + 1);
         }
-        printf("[%s : %.4f]\n", root->keys[i], root->value[i]);
-        if (!root->is_leaf) print(root->children[i], level + 1);
+        if (i > 0) {
+            for (int j = 0; j < level; ++j) {
+                fputs("    ", stdout); 
+            }
+            printf("[%s : %.4f]\n", root->keys[i-1], root->value[i-1]);
+        }
     }
 }
+
 
 
 int main() {
@@ -386,19 +389,19 @@ int main() {
                 break;
 
             case 3:
-                if (sscanf(line, "%d %63s", &op, key) == 2) {
-                    double res = search(tree.root, key);
-                    if (res != 0.0) printf("Found: %s = %.4f\n", key, res);
-                }
-                fputs("\n", stdout);
-                break;
-
-            case 4:
                 if (tree.root) {
                     fputs("Tree:\n", stdout);
                     print(tree.root, 0);
                 } else {
                     printf("Tree is empty\n");
+                }
+                fputs("\n", stdout);
+                break;
+            
+            case 4:
+                if (sscanf(line, "%d %63s", &op, key) == 2) {
+                    double res = search(tree.root, key);
+                    if (res != 0.0) printf("Found: %s = %.4f\n", key, res);
                 }
                 fputs("\n", stdout);
                 break;

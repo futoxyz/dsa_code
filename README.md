@@ -4,7 +4,7 @@ Checklist:
 - Sorting ✅
 - Operation tree ✅
 - B-tree ✅
-- ? ❌
+- Graph ✅
 - ? ❌
 - ? ❌
 - ? ❌

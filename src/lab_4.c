@@ -362,10 +362,8 @@ int main() {
     BTree tree = {NULL};
     char line[256];
     FILE *file = fopen("./tests/commands.txt", "r");
-
     if (!file) {
-        perror("Ошибка открытия файла");
-        return 1;
+        return -1;
     }
 
     while (fgets(line, sizeof(line), file)) {

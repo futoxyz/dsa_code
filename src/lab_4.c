@@ -363,7 +363,7 @@ int main() {
     char line[256];
     FILE *file = fopen("../tests/commands.txt", "r");
     if (!file) {
-        return -1;
+        return 1;
     }
 
     while (fgets(line, sizeof(line), file)) {

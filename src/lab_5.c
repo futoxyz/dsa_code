@@ -132,7 +132,7 @@ int main() {
 
     double **res = floyd(adj, v);
     if (res == NULL) return -1;
-    fputs("\nfloyd worshell matrix\n\n", stdout);
+    fputs("\nfloyd warshall matrix\n\n", stdout);
     print_matrix(res, v, v);
 
     int start, end;

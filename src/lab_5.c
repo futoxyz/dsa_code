@@ -79,7 +79,7 @@ double** floyd(double **adj, int v) {
 
 
 int main() {
-    FILE *f = fopen("tests/graph_input.txt", "r");
+    FILE *f = fopen("../tests/graph_input.txt", "r");
     if (!f) return 1;
     int v = 0, e = 0;
     char *buf = (char *) malloc(1024);

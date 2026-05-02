@@ -361,7 +361,7 @@ void print(Node *root, int level) {
 int main() {
     BTree tree = {NULL};
     char line[256];
-    FILE *file = fopen("./tests/commands.txt", "r");
+    FILE *file = fopen("../tests/commands.txt", "r");
     if (!file) {
         return -1;
     }

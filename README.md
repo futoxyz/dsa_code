@@ -1,7 +1,7 @@
 # Labs on C
 Checklist:
 - BST ✅
-- Sorting ✅
+- Sorting (shaker sort) ✅
 - Operation tree ✅
 - B-tree ✅
 - Graph ✅

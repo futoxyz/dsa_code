@@ -18,7 +18,6 @@ typedef struct BTree {
     Node *root;
 } BTree;
 
-int delete_node(Node *root, const char *key);
 
 
 Node *create_node(const int leaf) {
@@ -75,7 +74,7 @@ int split_child(Node *root, int index, Node *old_root) {
     root->keys_cnt++;
     return 0;
 }
-
+int delete_node(Node *root, const char *key);
 int insert_non_full(Node *root, const char *key, double value) {
     if (root == NULL) return -1;
     int i = root->keys_cnt - 1;

@@ -3,7 +3,7 @@
 #include <math.h>
 
 
-void print_matrix(double **m, int v, int e) {
+void print_matrix(double **m, const int v,const int e) {
     for (int i = 0; i < v; i++) {
         for (int j = 0; j < e; j++) {
             printf("%g", m[i][j]);
@@ -14,7 +14,7 @@ void print_matrix(double **m, int v, int e) {
 }
 
 
-double** to_adj(double **inc, int v, int e) {
+double** to_adj(double **inc, const int v, const int e) {
     double **adj = (double **)malloc(v * sizeof(double *));
     if (adj == NULL) return NULL;
 
@@ -49,7 +49,7 @@ double** to_adj(double **inc, int v, int e) {
 }
 
 
-double** floyd(double **adj, int v) {
+double** floyd(double **adj, const int v) {
     double **dist = (double **)malloc(v * sizeof(double *));
     if (dist == NULL) return NULL;
     for (int i = 0; i < v; i++) {
